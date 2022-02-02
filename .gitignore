@@ -1,0 +1,14 @@
+node_modules/*
+artifacts/*
+abi-artifacts/*
+cache/*
+coverage/*
+coverage.json
+deployments/hardhat
+deployments/localhost
+typechain/*
+.env
+.vscode/*
+mythxOutput.json
+deposit.local.config.ts
+.history

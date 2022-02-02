@@ -1,0 +1,225 @@
+version: '2.1'
+orbs:
+  node: circleci/node@4.6.0
+  coveralls: coveralls/coveralls@1.0.6
+jobs:
+  unit_tests_coverage:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command:
+            yarn coverage
+      - coveralls/upload:
+          parallel: true
+
+  integration_tests_coverage:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command:
+            yarn coverage:integration
+      - coveralls/upload:
+          parallel: true
+
+  unit_tests:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Run unit tests"
+          command: yarn test
+
+  solhint:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Run solhint and lint-check"
+          command: |
+            yarn solhint
+            yarn lint-check
+
+  coverage:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Run coverage"
+          command: yarn coverage
+      - coveralls/upload
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+
+  integration_tests:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Run integration tests"
+          command: yarn test:integration
+
+  save_and_upload_coverage_artifacts:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - coveralls/upload:
+          parallel_finished: true
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+
+  localDeployment:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Deploy on local network"
+          command: yarn deploy-ci
+
+  localDeploymentForkMainnet:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Deploy on forked mainnet"
+          command: yarn deploy-ci:fork:mainnet
+
+  runMythX-Pool:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Install MythX"
+          command: |
+            sudo apt update
+            sudo apt install python3-pip
+            sudo pip3 install python-dateutil==2.8.1
+            sudo yarn mythx-install
+      - run:
+          name: "Run mythx"
+          no_output_timeout: 30m
+          command: yarn mythx-pool
+
+  runMythX-AMM:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Install MythX"
+          command: |
+            sudo apt update
+            sudo apt install python3-pip
+            sudo pip3 install python-dateutil==2.8.1
+            sudo yarn mythx-install
+      - run:
+          name: "Run mythx"
+          no_output_timeout: 30m
+          command: yarn mythx-amm
+
+  runMythX-Misc:
+    executor:
+      name: node/default
+      tag: '15.11'
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          name: "Install MythX"
+          command: |
+            sudo apt update
+            sudo apt install python3-pip
+            sudo pip3 install python-dateutil==2.8.1
+            sudo yarn mythx-install
+      - run:
+          name: "Run mythx"
+          no_output_timeout: 30m
+          command: yarn mythx-misc
+
+workflows:
+  code_coverage:
+    jobs:
+      - unit_tests_coverage:
+          context: 
+            - Coveralls
+      - integration_tests_coverage:
+          context: 
+            - Coveralls
+      - save_and_upload_coverage_artifacts:
+          context: 
+            - Coveralls
+          requires:
+              - unit_tests_coverage
+              - integration_tests_coverage
+  unit_tests:
+    jobs:
+      - unit_tests
+  integration_tests:
+    jobs:
+      - integration_tests
+  solhint:
+    jobs:
+      - solhint
+  test_local_deployment:
+    jobs:
+      - localDeployment
+  test_local_deployment_fork_mainnet:
+    jobs:
+      - localDeploymentForkMainnet
+  mythx_pool:
+    jobs:
+      - runMythX-Pool
+  mythx_amm:
+    jobs:
+      - runMythX-AMM
+  mythx_misc:
+    jobs:
+      - runMythX-Misc
+
+notify:
+  webhooks:
+    - url: https://coveralls.io/webhook?repo_token=${COVERALLS_REPO_TOKEN}
