@@ -6,7 +6,7 @@ Smart contracts of Tempus Finance
 
 ## Gonzalo Prelatto Notes:
 Integrating new token on tempus protocol for farming with stMatic.
-Like to documentation: https://docs.google.com/document/d/1sTAkRxbQI05-Db77v5O3fIAnCL_9sqxLOvFykzs7u_M/edit#heading=h.9kxbftdxcdyj
+Link to documentation: https://docs.google.com/document/d/1sTAkRxbQI05-Db77v5O3fIAnCL_9sqxLOvFykzs7u_M/edit#heading=h.9kxbftdxcdyj
 
 ## Compiling and running tests
 
