@@ -4,6 +4,10 @@ Smart contracts of Tempus Finance
 
 [![Coverage Status](https://coveralls.io/repos/github/tempus-finance/tempus-protocol/badge.svg?branch=master&t=3oDH6q&kill_cache=1)](https://coveralls.io/github/tempus-finance/tempus-protocol?branch=master)
 
+## Gonzalo Prelatto Notes:
+Integrating new token on tempus protocol for farming with stMatic.
+Like to documentation: https://docs.google.com/document/d/1sTAkRxbQI05-Db77v5O3fIAnCL_9sqxLOvFykzs7u_M/edit#heading=h.9kxbftdxcdyj
+
 ## Compiling and running tests
 
 Installing dependancies `yarn install`
